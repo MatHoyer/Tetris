@@ -21,8 +21,7 @@ export const Game: React.FC = () => {
     const [board, setBoard] = useState<BoardShape>(createBoard);
     const [speed, setSpeed] = useState(1000);
 
-    const spawnBlock = () => {
-        const newBoard = [...board];
+    const spawnBlock = (newBoard: BoardShape) => {
         const name = getRandomBlock();
         const newBlock = SHAPES[name];
         const x = Math.floor((board[0].length - newBlock.shape[0].length) / 2);
@@ -44,7 +43,6 @@ export const Game: React.FC = () => {
                 }
             }
         }
-        setBoard(newBoard);
     };
 
     const clearBoard = () => {
@@ -68,20 +66,6 @@ export const Game: React.FC = () => {
         return '0';
     };
 
-    const getCurrentCellsPoint = () => {
-        const name = getCurrentCellsName();
-        if (name === 'I') {
-            const cells = getCurrentCells();
-            // Vertical
-            if (cells[0].x === cells[1].x) {
-            }
-            // Horizontal
-            else if (cells[0].y === cells[1].y) {
-                return cells[0];
-            }
-        }
-    };
-
     const getCurrentCells = () => {
         const cells = [];
         for (let i = board.length - 1; i >= 0; i--) {
@@ -94,8 +78,7 @@ export const Game: React.FC = () => {
         return cells;
     };
 
-    const fixPiece = () => {
-        const newBoard = [...board];
+    const fixPiece = (newBoard: BoardShape) => {
         for (let i = 0; i < newBoard.length; i++) {
             for (let j = 0; j < newBoard[i].length; j++) {
                 if (newBoard[i][j] !== EmptyCell.Empty && !newBoard[i][j].includes('fixed')) {
@@ -103,13 +86,39 @@ export const Game: React.FC = () => {
                 }
             }
         }
-        setBoard(newBoard);
     };
 
     const rotateCells = () => {
         const newBoard = [...board];
-        const cell = getCurrentCellsPoint();
+        const cells = getCurrentCells();
         const name = getCurrentCellsName();
+
+        const centerX = cells.reduce((sum, cell) => sum + cell.x, 0) / cells.length;
+        const centerY = cells.reduce((sum, cell) => sum + cell.y, 0) / cells.length;
+
+        const rotatedCells = cells.map((cell) => {
+            const x = cell.x - centerX;
+            const y = cell.y - centerY;
+
+            return {
+                x: Math.round(-y + centerX),
+                y: Math.round(x + centerY),
+            };
+        });
+
+        if (
+            !rotatedCells.some(
+                (cell) => cell.x < 0 || cell.x >= newBoard[0].length || cell.y < 0 || cell.y >= newBoard.length
+            )
+        ) {
+            cells.map((cell) => {
+                newBoard[cell.y][cell.x] = EmptyCell.Empty;
+            });
+            rotatedCells.map((cell) => {
+                newBoard[cell.y][cell.x] = name;
+            });
+            setBoard(newBoard);
+        }
     };
 
     const goRightCells = () => {
@@ -153,15 +162,24 @@ export const Game: React.FC = () => {
         setBoard(newBoard);
     };
 
-    const goDownCells = (cells: { x: number; y: number }[]) => {
-        const newBoard = [...board];
+    const destroyLine = (newBoard: BoardShape) => {
+        for (let i = newBoard.length - 1; i >= 0; i--) {
+            if (newBoard[i].every((cell) => cell.includes('fixed'))) {
+                newBoard.splice(i, 1);
+                newBoard.unshift(Array(10).fill(EmptyCell.Empty));
+            }
+        }
+    };
+
+    const goDownCells = (newBoard: BoardShape, cells: { x: number; y: number }[]) => {
         for (let i = 0; i < cells.length; i++) {
             const { x, y } = cells[i];
             if (
                 y === newBoard.length - 1 ||
                 (newBoard[y + 1][x] !== EmptyCell.Empty && newBoard[y + 1][x].includes('fixed'))
             ) {
-                fixPiece();
+                fixPiece(newBoard);
+                destroyLine(newBoard);
                 return;
             }
         }
@@ -171,7 +189,6 @@ export const Game: React.FC = () => {
             newBoard[y + 1][x] = board[y][x];
             newBoard[y][x] = EmptyCell.Empty;
         }
-        setBoard(newBoard);
     };
 
     const handlePlaying = () => {
@@ -182,18 +199,20 @@ export const Game: React.FC = () => {
     useEffect(() => {
         if (playing) {
             const int = setInterval(() => {
+                const newBoard = [...board];
                 const cells = getCurrentCells();
                 if (cells.length === 0) {
-                    spawnBlock();
+                    spawnBlock(newBoard);
                 } else {
-                    goDownCells(cells);
+                    goDownCells(newBoard, cells);
                 }
+                setBoard(newBoard);
             }, speed);
             return () => {
                 clearInterval(int);
             };
         }
-    }, [playing, speed]);
+    }, [playing, speed, board]);
 
     useEffect(() => {
         if (playing) {
@@ -223,7 +242,7 @@ export const Game: React.FC = () => {
                 window.removeEventListener('keyup', handleKeyUp);
             };
         }
-    }, [playing]);
+    }, [board]);
 
     return (
         <div>
@@ -232,7 +251,6 @@ export const Game: React.FC = () => {
                 <Board currentBoard={board} />
                 <div className="controls">
                     <Button onClick={handlePlaying}>{playing ? 'Quit' : 'Play'}</Button>
-                    <Button onClick={spawnBlock}>Spawn</Button>
                 </div>
             </div>
         </div>
