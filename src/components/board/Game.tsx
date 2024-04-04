@@ -1,4 +1,4 @@
-import { Block, BlockShape, BoardShape, EmptyCell, SHAPES } from '@/types';
+import { Block, BoardShape, EmptyCell, SHAPES } from '@/types';
 import { Board } from './Board';
 import React, { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
