@@ -1,0 +1,165 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 222.2 84% 4.9%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 222.2 84% 4.9%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 222.2 84% 4.9%;
+
+        --primary: 222.2 47.4% 11.2%;
+        --primary-foreground: 210 40% 98%;
+
+        --secondary: 210 40% 96.1%;
+        --secondary-foreground: 222.2 47.4% 11.2%;
+
+        --muted: 210 40% 96.1%;
+        --muted-foreground: 215.4 16.3% 46.9%;
+
+        --accent: 210 40% 96.1%;
+        --accent-foreground: 222.2 47.4% 11.2%;
+
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 214.3 31.8% 91.4%;
+        --input: 214.3 31.8% 91.4%;
+        --ring: 222.2 84% 4.9%;
+
+        --radius: 0.5rem;
+    }
+
+    .dark {
+        --background: 222.2 84% 4.9%;
+        --foreground: 210 40% 98%;
+
+        --card: 222.2 84% 4.9%;
+        --card-foreground: 210 40% 98%;
+
+        --popover: 222.2 84% 4.9%;
+        --popover-foreground: 210 40% 98%;
+
+        --primary: 210 40% 98%;
+        --primary-foreground: 222.2 47.4% 11.2%;
+
+        --secondary: 217.2 32.6% 17.5%;
+        --secondary-foreground: 210 40% 98%;
+
+        --muted: 217.2 32.6% 17.5%;
+        --muted-foreground: 215 20.2% 65.1%;
+
+        --accent: 217.2 32.6% 17.5%;
+        --accent-foreground: 210 40% 98%;
+
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 217.2 32.6% 17.5%;
+        --input: 217.2 32.6% 17.5%;
+        --ring: 212.7 26.8% 83.9%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+/* Tetris */
+h1 {
+    text-align: center;
+    grid-area: title;
+}
+
+.app {
+    display: grid;
+    grid-template-areas:
+        '. title .'
+        '. game controls';
+    grid-template-columns: repeat(3, 1fr);
+}
+
+button {
+    padding: 4px;
+}
+
+.board {
+    border: 2px solid;
+    user-select: none;
+    margin: auto;
+    grid-area: game;
+}
+
+.controls {
+    grid-area: controls;
+}
+
+.row {
+    display: flex;
+}
+
+.upcoming {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.cell {
+    width: 30px;
+    aspect-ratio: 1;
+    border: 1px solid var(--background);
+}
+
+.cell.hidden {
+    visibility: hidden;
+}
+
+.cell.Empty {
+    background-color: var(--background);
+}
+
+.cell.I {
+    background-color: rgb(80, 227, 230);
+    border: 1px solid rgb(53, 143, 145);
+}
+
+.cell.J {
+    background-color: rgb(36, 95, 223);
+    border: 1px solid rgb(21, 57, 136);
+}
+
+.cell.L {
+    background-color: rgb(223, 173, 36);
+    border: 1px solid rgb(150, 116, 24);
+}
+
+.cell.O {
+    background-color: rgb(223, 217, 36);
+    border: 1px solid rgb(138, 134, 22);
+}
+
+.cell.S {
+    background-color: rgb(48, 211, 56);
+    border: 1px solid rgb(26, 117, 30);
+}
+
+.cell.T {
+    background-color: rgb(132, 61, 198);
+    border: 1px solid rgb(71, 33, 107);
+}
+
+.cell.Z {
+    background-color: rgb(227, 78, 78);
+    border: 1px solid rgb(126, 43, 43);
+}
